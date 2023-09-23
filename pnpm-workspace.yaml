@@ -1,0 +1,4 @@
+packages:
+  - "internal-lib/react-flow-main/packages/*"
+  - "internal-lib/react-flow-main/examples/*"
+  - "internal-lib/react-flow-main/ooling/*" 
