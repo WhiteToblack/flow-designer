@@ -1,0 +1,19 @@
+{
+  "name": "flow-designer-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^6.1.0",
+    "typescript": "^5.2.2"
+  }
+}
