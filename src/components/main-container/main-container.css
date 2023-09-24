@@ -1,0 +1,65 @@
+
+.symbol {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid black !important;
+    text-align: center !important;   
+    font-size: 16px !important;   
+  }
+
+  .oval {
+    width: 80px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+  }
+
+  .rectangle {
+    width: 100px !important;
+    height: 60px !important;
+  }
+
+  .customTriangle  {
+    width: 0 !important;
+    height: 0 !important;
+    border: 65px solid transparent !important;
+    border-top: 0 !important;
+    border-bottom: 130px solid #ccc!important;
+  }
+  .diamond {
+    width: 100px;
+    height: 100px;
+    background-color: #555555;
+    color:white;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+
+  .parallelogram {
+    width: 200px; /* Uzun kenarın genişliği */
+    height: 60px; /* Yükseklik */
+    background-color: #ccc; /* Arka plan rengi */
+    clip-path: polygon(20% 0, 100% 0, 80% 100%, 0% 100%);
+  }  
+  
+  .circle {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+  }
+
+  .cylinder {
+    position: relative;
+    width: 60px;
+    height: 120px;
+    background: linear-gradient(to bottom, #999, #666);
+    border-radius: 30px;
+  }
+
+  .pentagon {
+    position: relative !important;
+    width: 100px !important;
+    height: 55px !important;
+    color:white;
+    background: #666 !important;
+    clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%) !important;
+  }

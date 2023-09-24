@@ -1,4 +1,5 @@
-import { useCallback, MouseEvent, useEffect } from 'react';
+import { useCallback, MouseEvent, useEffect, DragEvent, useState, useMemo } from 'react';
+import './main-container.css';
 import ReactFlow, {
     Background,
     MiniMap,
@@ -9,19 +10,17 @@ import ReactFlow, {
     Connection,
     Edge,
     useNodesState,
-    useEdgesState,
-    Panel,
+    useEdgesState
 } from 'reactflow';
+import MainContextMenu from '../flow-context-menu/flow-context-menu';
+import * as reactFlowCustomNodes from '../flow-base-component/custom-nodes/react-flow-custom-nodes';
 
 const initialNodes: Node[] = [
     {
         id: 'Start',
-        // type: 'input',
+        type: 'oval',
         data: { label: 'Start' },
-        position: { x: 600, y: 50 },
-        className: "node-body",
-        type: 'triangle',
-        style: { width: 100, height: 70, backgroundColor: 'GrayText', textAlign: 'center', alignContent: 'center', alignItems: 'center', paddingTop: 20, fontSize: 20, borderRadius: 20 },
+        position: { x: 600, y: 50 }
 
     }
 ];
@@ -95,21 +94,20 @@ const UseZoomPanHelperFlow = () => {
         deleteElements({ nodes: selectedNodes, edges: selectedEdges });
     }, [deleteElements, nodes, edges]);
 
-    const onAddNode = useCallback((ruleId: string) => {
+    const onAddNode = useCallback((nodeId: string, text: string) => {
+        var nodes = getNodes();
+        var lastY = nodes[0].position.y;
         const newNode = {
-            id: getId(),
-            position: { x: 200, y: 100 },
-            data: {
-                label: 'New Node - ' + ruleId,
-            },
+            id: nodeId + new Date().toString(),
+            type: nodeId,
+            data: { label: text },
+            position: { x: 50, y: lastY + 100 },
+            //className: "symbol " + nodeId,
+            // style: { width: 100, height: 70, backgroundColor: 'GrayText', textAlign: 'center', alignContent: 'center', alignItems: 'center', paddingTop: 20, fontSize: 20, borderRadius: 20 },
         };
 
         addNodes(newNode);
     }, [addNodes]);
-
-    const _addNode = (event: any) => {
-        onAddNode(event.target.getAttribute('rule-id'));
-    }
 
     const getEdgeValues = () => {
         let edges = getEdges();
@@ -121,38 +119,51 @@ const UseZoomPanHelperFlow = () => {
         summarySpan.innerHTML = JSON.stringify(spanText);
     }
 
+    const [contextMenuToggleState, setContextMenuToggleState] = useState(false);
+    const onContextMenu = (event: any): void => {
+        setContextMenuToggleState(!contextMenuToggleState);
+        event.preventDefault();
+    }
+
+    const onContextMenuSelected = (symbolId: string) => {
+        onAddNode(symbolId, 'test');
+    }
+    const getNodeTypes = () => {
+        return {
+            diamond: reactFlowCustomNodes.default.DiamondNode,
+            circle: reactFlowCustomNodes.default.CircleNode,
+            cylinder: reactFlowCustomNodes.default.CylinderNode,
+            oval: reactFlowCustomNodes.default.OvalNode,
+            pentagon: reactFlowCustomNodes.default.PentagonNode,
+            customTriangle: reactFlowCustomNodes.default.CustomTriangleNode,
+            parallelogram: reactFlowCustomNodes.default.ParallelogramNode,
+            rectangle: reactFlowCustomNodes.default.RectangleNode
+        };
+
+    }
+    const nodeTypes = useMemo(() => (getNodeTypes()), []);
+
     return (
-        <div style={{ display: 'flex', flexDirection: 'row', position: 'relative', height: '100%', width: 'auto' }}>
-            <div style={{ flexDirection: 'column', float: 'left', width: 300 }}>
-                <ul>
-                    <li><a href="#" rule-id='1' onClick={_addNode}>Rule 1</a></li>
-                    <li><a href="#" rule-id='2' onClick={_addNode}>Rule 2</a></li>
-                    <li><a href="#" rule-id='3' onClick={_addNode}>Rule 3</a></li>
-                    <li><a href="#" rule-id='4' onClick={_addNode}>Rule 4</a></li>
-                    <li><input type='button' className='primary' value={'Get Data'} onClick={getEdgeValues}></input></li>
-                    <li><span id='summary'></span></li>
-                </ul>
-            </div>
-            <div style={{ flexDirection: 'column', float: 'left', width: '100%', height: '100%' }}>
+        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            <MainContextMenu isVisible={contextMenuToggleState} onContextMenuSelected={onContextMenuSelected}></MainContextMenu>
 
-                <ReactFlow
-                    nodes={nodes}
-                    edges={edges}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    //    onNodeClick={onNodeClick}
-                    onConnect={onConnect}
-                    //    onPaneClick={onPaneClick}
-                    //  fitView
-                    fitViewOptions={{ duration: 1200, padding: 0.2 }}
-                    maxZoom={Infinity}
-                >
+            <ReactFlow
+                nodeTypes={nodeTypes}
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                //    onNodeClick={onNodeClick}
+                onConnect={onConnect}
+                //    onPaneClick={onPaneClick}               
+                fitViewOptions={{ duration: 1200, padding: 0.1 }}
+                maxZoom={50}
+                onContextMenu={onContextMenu}
+            >
 
-                    <Background />
-                    <MiniMap />
-                </ReactFlow>
-
-            </div>
+                <Background />
+                <MiniMap />
+            </ReactFlow>
         </div>
     );
 };

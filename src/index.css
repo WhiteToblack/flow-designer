@@ -86,3 +86,68 @@ header select {
     display: block;
   }
 }
+.symbol {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid black;
+  text-align: center;
+  margin: 10px;
+  font-size: 16px;
+}
+
+.oval {
+  width: 80px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.rectangle {
+  width: 100px;
+  height: 60px;
+}
+
+.diamond {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 50px 25px 0;
+  border-color: #555555 transparent transparent transparent;
+}
+
+.parallelogram {
+  width: 120px;
+  height: 60px;
+  transform: skewX(-20deg);
+}
+
+.circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
+.cylinder {
+  width: 60px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, #999, #666);
+}
+
+.pentagon {
+  position: relative;
+  width: 100px;
+  height: 55px;
+  background: #666;
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+
+/* Style for Decision Symbol */
+.decision {
+  width: 100px;
+  height: 100px;
+  border: 2px solid black;
+  border-radius: 50%;
+  background-color: #fff;
+  color: #000;
+}
