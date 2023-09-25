@@ -47,8 +47,7 @@ const MainContextMenu: React.FC<IMainContextMenuProps> = (props) => {
                 <div className="symbol circle" symbol-id={'circle'} title="Connector"></div>
                 <div className="symbol rectangle" symbol-id={'rectangle'} title="Direct Access Storage - Process - Document - Predefined Process - Delay"></div>
                 <div className="symbol cylinder" symbol-id={'cylinder'} title="Data"></div>
-                <div className="symbol pentagon" symbol-id={'pentagon'} title="Manual Input"></div>
-                <button onClick={togglePopup}>Close Popup</button>
+                <div className="symbol pentagon" symbol-id={'pentagon'} title="Manual Input"></div>               
             </div>
         </div>
     </>
