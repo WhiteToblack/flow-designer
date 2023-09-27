@@ -143,7 +143,7 @@ const UseZoomPanHelperFlow = () => {
         setEdges(newEdges);
     }
 
-    const CallCollectionService = async (cbMethod: () => void) => {
+    const CallCollectionService = async () => {
         if (!isServiceCalled) {
             isServiceCalled = true;
             ruleService.GetCollection(collectionName).then((res: any) => {
@@ -153,14 +153,13 @@ const UseZoomPanHelperFlow = () => {
                 }
             }).then(() => {
                 setStateChanged(!stateChanged);
-                cbMethod();
             }).finally(() => {
                 isServiceCalled = true;
             });
         }
     }
 
-    const setSummaryData = () => {
+    const getEdgeLogs = () => {
         let edges = getEdges();
         let spanText: string = '';
         edges.forEach(edge => {
@@ -170,9 +169,9 @@ const UseZoomPanHelperFlow = () => {
         setSummary(spanText);
     }
 
-    const getEdgeLogs = () => {
+    const getCollectionByName = () => {
         isServiceCalled = false;
-        CallCollectionService(setSummaryData);
+        CallCollectionService();
     }
 
     const getSaveMessage = () => {
@@ -215,21 +214,20 @@ const UseZoomPanHelperFlow = () => {
     const onRunClick = () => {
         let nodes = getNodes();
         let _edges = getEdges();
-        nodes = nodes.sort((a, b) => parseInt(a.data.sequence) - parseInt(b.data.sequence))
-        for (let x = 0; x < nodes.length; x++) {
-            const node = nodes[x];
-
-            for (let i = 0; i < _edges.length; i++) {
-                if (_edges[i].source == node.id) {
-                    _edges[i].animated = true;
+        nodes = nodes.sort((a, b) => parseInt(b.data.sequence) - parseInt(a.data.sequence))
+        for (let node of nodes) {
+            for (let edge of _edges) {
+                if (edge.source == node.id) {
+                    edge.animated = true;
                 }
 
-                _edges.filter((e) => e.id !== _edges[i].id).concat(_edges[i]);
+                _edges.filter((e) => e.id !== edge.id).concat(edge);
                 setEdges(_edges);
             }
             console.log(node.id + ' running !');
             eval(node.data.script!);
         }
+        console.log('Execution Ended!');
     }
 
     const onContextMenuSelected = (symbolId: string, symbolTitle: string) => {
@@ -302,10 +300,13 @@ const UseZoomPanHelperFlow = () => {
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <MainContextMenu onContextMenuSelected={onContextMenuSelected} />
             <NodeContextMenu boundElement={boundElement} nodeScript={selectedNodeScript} onClose={onNodeMenuClose} onSave={onNodeMenuSaveScript} onDelete={onNodeContextMenuDelete} />
-            <Box position={'absolute'} top={0} left={0} zIndex={1000} width={400} marginLeft={5} marginTop={1}>
+            <Box position={'absolute'} top={0} left={0} zIndex={1000} width={'20%'} marginLeft={5} marginTop={1}>
                 <Box marginBottom={5}>
-                    <div>
+                    <div style={{ width: '500px' }}>
                         <TextField variant="filled" placeholder='Collection Name' style={{ height: '30 !important' }} onBlur={onCollectionChange}></TextField>
+                        <Tooltip title="Get">
+                            <Button variant="contained" onClick={getEdgeLogs} style={{ height: 55, marginLeft: 5 }}>Get</Button>
+                        </Tooltip>
                         <Tooltip title="Save">
                             <Button variant="contained" onClick={onSave} style={{ height: 55, marginLeft: 5 }}>Save</Button>
                         </Tooltip>
@@ -315,10 +316,12 @@ const UseZoomPanHelperFlow = () => {
                     </div>
 
                     <Tooltip title="Open Menu">
-                        <Button variant="contained" onClick={getEdgeLogs} style={{ marginTop: 30 }}>Get Logs</Button>
+                        <Button variant="contained" onClick={getCollectionByName} style={{ marginTop: 30 }}>Get Logs</Button>
                     </Tooltip>
 
                 </Box>
+            </Box>
+            <Box position={'absolute'} top={0} left={0} zIndex={1000} width={'7%'} marginLeft={5} marginTop={'15%'}>
                 <TextField
                     label="Edge summary"
                     variant="outlined"
@@ -327,7 +330,9 @@ const UseZoomPanHelperFlow = () => {
                     multiline
                     fullWidth
                 />
+
             </Box>
+
             <ReactFlowStyled
                 nodeTypes={nodeTypes}
                 nodes={nodes}

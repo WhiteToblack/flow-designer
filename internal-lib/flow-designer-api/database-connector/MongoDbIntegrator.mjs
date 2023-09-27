@@ -27,7 +27,7 @@ export default class MongoDbIntegrator {
   startConnection = async () => {
     try {
       await this.client.connect();
-      this.db = this.client.db("FlowDesigner");
+      this.db = this.client.db("WTB");
       // Send a ping to confirm a successful connection
       await this.db.command({ ping: 1 });
 

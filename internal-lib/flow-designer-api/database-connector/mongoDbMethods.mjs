@@ -8,7 +8,7 @@ export default class DbCallbackMethods {
   }
 
   findByCollection = async (collectionName) => {
-    const ruleTbl = await this.db.collection("Rule");
+    const flowCollection = await this.db.collection("FlowCollection");
     const query = { CollectionName: collectionName };
     const options = {
       // Sort matched documents in descending order by rating
@@ -27,7 +27,7 @@ export default class DbCallbackMethods {
       },
     };
 
-    const nodes = await ruleTbl.find(query, options);
+    const nodes = await flowCollection.find(query, options);
 
     let response = [];
     for await (const doc of nodes) {
@@ -38,9 +38,13 @@ export default class DbCallbackMethods {
   };
 
   saveCollection = async (params) => {
-    const ruleTbl = await this.db.collection("Rule");
+    const flowCollection = await this.db.collection("FlowCollection");
     const options = { ordered: true };
-    const result = await ruleTbl.insertMany(params, options);
+
+    const deleteResult = await flowCollection.deleteMany({ title: { $regex: "Santa" } }); 
+    console.log("Deleted " + deleteResult.deletedCount + " documents");
+
+    const result = await flowCollection.insertMany(params, options);
     console.log(`${result.insertedCount} documents were inserted`);
     return result;
   };
