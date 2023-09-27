@@ -23,7 +23,8 @@ export default class DbCallbackMethods {
         CollectionName: 1,
         PositionX: 1,
         PositionY: 1,
-        ScritData: 1,
+        Sequence:1,
+        ScriptData: 1,
       },
     };
 
@@ -41,7 +42,10 @@ export default class DbCallbackMethods {
     const flowCollection = await this.db.collection("FlowCollection");
     const options = { ordered: true };
 
-    const deleteResult = await flowCollection.deleteMany({ title: { $regex: "Santa" } }); 
+    const deleteResult = await flowCollection.deleteMany({
+      CollectionName: params[0].CollectionName,
+    });
+
     console.log("Deleted " + deleteResult.deletedCount + " documents");
 
     const result = await flowCollection.insertMany(params, options);

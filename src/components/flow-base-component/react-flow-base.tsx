@@ -25,6 +25,7 @@ import NodeContextMenu from './node-context-menu';
 import FlowNode from '../../../internal-lib/flow-designer-entity/entity/flow-node';
 import CollectionService from '../service/collection-service';
 import SendIcon from '@mui/icons-material/Send';
+import { Try } from '@mui/icons-material';
 
 const ReactFlowStyled = styled(ReactFlow)`
   background-color: ${(props) => props.theme.palette.background.default};
@@ -150,6 +151,7 @@ const UseZoomPanHelperFlow = () => {
                 if (res!.data!.length > 0) {
                     setInitialNodes(res.data);
                     setInitialEdges(res.data);
+                    setStateChanged(!stateChanged);
                 }
             }).then(() => {
                 setStateChanged(!stateChanged);
@@ -215,18 +217,26 @@ const UseZoomPanHelperFlow = () => {
         let nodes = getNodes();
         let _edges = getEdges();
         nodes = nodes.sort((a, b) => parseInt(b.data.sequence) - parseInt(a.data.sequence))
+        let summaryText = '';
         for (let node of nodes) {
             for (let edge of _edges) {
                 if (edge.source == node.id) {
-                    edge.animated = true;
-                }
+                    try {
+                        eval(node.data.script!);
+                    } catch (error) {
+                        console.warn('Error while runninng Node : ' + node.id)
+                    }
 
-                _edges.filter((e) => e.id !== edge.id).concat(edge);
-                setEdges(_edges);
+                    edge.animated = true;
+                    _edges.filter((e) => e.id !== edge.id).concat(edge);
+                    setEdges(_edges);
+                }
             }
-            console.log(node.id + ' running !');
-            eval(node.data.script!);
-        }
+
+            summaryText += node.id + ' running script => ' + node.data.script! + '\n';
+        };
+
+        setSummary(summaryText);
         console.log('Execution Ended!');
     }
 
@@ -305,7 +315,7 @@ const UseZoomPanHelperFlow = () => {
                     <div style={{ width: '500px' }}>
                         <TextField variant="filled" placeholder='Collection Name' style={{ height: '30 !important' }} onBlur={onCollectionChange}></TextField>
                         <Tooltip title="Get">
-                            <Button variant="contained" onClick={getEdgeLogs} style={{ height: 55, marginLeft: 5 }}>Get</Button>
+                            <Button variant="contained" onClick={getCollectionByName} style={{ height: 55, marginLeft: 5 }}>Get</Button>
                         </Tooltip>
                         <Tooltip title="Save">
                             <Button variant="contained" onClick={onSave} style={{ height: 55, marginLeft: 5 }}>Save</Button>
@@ -316,12 +326,12 @@ const UseZoomPanHelperFlow = () => {
                     </div>
 
                     <Tooltip title="Open Menu">
-                        <Button variant="contained" onClick={getCollectionByName} style={{ marginTop: 30 }}>Get Logs</Button>
+                        <Button variant="contained" onClick={getEdgeLogs} style={{ marginTop: 30 }}>Get Logs</Button>
                     </Tooltip>
 
                 </Box>
             </Box>
-            <Box position={'absolute'} top={0} left={0} zIndex={1000} width={'7%'} marginLeft={5} marginTop={'15%'}>
+            <Box position={'absolute'} top={0} left={0} zIndex={1000} width={'20%'} marginLeft={5} marginTop={'15%'}>
                 <TextField
                     label="Edge summary"
                     variant="outlined"
@@ -330,7 +340,6 @@ const UseZoomPanHelperFlow = () => {
                     multiline
                     fullWidth
                 />
-
             </Box>
 
             <ReactFlowStyled
