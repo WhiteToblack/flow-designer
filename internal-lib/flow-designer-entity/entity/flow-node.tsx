@@ -1,12 +1,17 @@
 export default interface FlowNode {
     Id: string,
-    Type: FlowNodeType,
+    SymbolType: string,
     Source: string[],
-    Destionation: string[],
-    ExecutionText: string,
-    ExecutionType: string,
-    IsAsync: boolean,
-    Css: string,
-    Icon: string,
-    EdgeType: string
+    Destination: string[],
+    CollectionName: string,
+    PositionX: number,
+    PositionY: number,
+    Sequence: number,
+    ExecutionType?: string,
+    IsAsync?: boolean,
+    Css?: string,
+    Icon?: string,
+    EdgeType?: string,
+    ScriptData?: string,
+    ScriptTextPath?: string
 }

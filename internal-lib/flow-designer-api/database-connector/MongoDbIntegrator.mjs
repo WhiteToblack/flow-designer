@@ -1,4 +1,5 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
+import cors from "cors";
 import DbCallbackMethods from "./mongoDbMethods.mjs";
 export default class MongoDbIntegrator {
   db = null;
@@ -42,9 +43,22 @@ export default class MongoDbIntegrator {
   };
 
   Initialize = () => {
-    this.app.get("/status", (request, response) => this.getStatus(response));
-    this.app.get("/find", async (request, response) =>
+    var corsOptions = {
+      origin: "http://localhost:5173",
+      optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+    };
+
+    this.app.get("/status", cors(corsOptions), (request, response) =>
+      this.getStatus(response)
+    );
+    this.app.get("/find", cors(corsOptions), async (request, response) =>
       this.findByCollection.call(this, request, response)
+    );
+    this.app.post(
+      "/saveCollection",
+      cors(corsOptions),
+      async (request, response) =>
+        this.saveCollection.call(this, request, response)
     );
 
     this.callbackMethods = new DbCallbackMethods(this);
@@ -57,7 +71,9 @@ export default class MongoDbIntegrator {
     } catch (error) {
       console.log(error);
     } finally {
-      await this.client.close();
+      if (this != null && this.client != null && this.client.close) {
+        await this.client.close();
+      }
     }
   };
 
@@ -72,6 +88,13 @@ export default class MongoDbIntegrator {
   findByCollection = async (request, response) => {
     var result = await this.sendCommand(
       this.callbackMethods.findByCollection.bind(this, request.query.Collection)
+    );
+    response.send(result);
+  };
+
+  saveCollection = async (request, response) => {
+    var result = await this.sendCommand(
+      this.callbackMethods.saveCollection.bind(this, request.body)
     );
     response.send(result);
   };

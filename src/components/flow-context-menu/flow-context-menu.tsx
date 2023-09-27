@@ -1,55 +1,99 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useState } from "react";
 import './flow-context-menu.css'
+import { Box, Button, Modal, SpeedDial, SpeedDialAction, SpeedDialIcon, TextField, Typography } from "@mui/material";
+import React from "react";
+import { ChangeHistory, Circle, Crop169, CropPortrait, DiamondSharp, Pentagon, RectangleSharp } from "@mui/icons-material";
+
 interface IMainContextMenuProps {
-    isVisible: boolean,
-    onContextMenuSelected: (symbolId: string) => void
+    onContextMenuSelected: (symbolId: string, symbolTitle: string) => void
 }
 
 const MainContextMenu: React.FC<IMainContextMenuProps> = (props) => {
-    const [isVisible, setVisible] = useState(false);
-    let allEventBinded = false;
-    useEffect(() => {
-        setVisible(props.isVisible);
-        togglePopup();
-    }, [props.isVisible]);
+    const [symbolId, setSymbolId] = useState('');
+    const [symbolTitle, setSymbolTitle] = useState('');
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
 
-    useLayoutEffect(() => {
-        if (allEventBinded) {
-            return;
-        }
-        var popup = document.getElementById("popupContainer")!;
-        popup.parentElement?.addEventListener('click', () => {
-            togglePopup();
-        })
-        var symbols = Array.from(popup.getElementsByClassName('symbol'));
-        symbols.forEach((element: any) => {
-            element.addEventListener('click', (e: any) => {
-                props.onContextMenuSelected(e.target.getAttribute('symbol-id'));
-            })
-        });
-        allEventBinded = true;
-    }, [])
+    const [modelOpen, setOpenModel] = React.useState(false);
+    const handleOpenModel = () => setOpenModel(true);
+    const handleCloseModel = () => setOpenModel(false);
 
-    const togglePopup = () => {
-        setVisible(!isVisible);
-        var popup = document.getElementById("popupContainer")!;
-        popup.style.display = isVisible ? "flex" : "none";
+    const onModalSaveClick = () => {
+        onModelClosed(symbolTitle);
     }
 
+    const onSymbolSelected = (symbolId: string) => {
+        setSymbolId(symbolId);
+        handleOpenModel();
+    }
+
+    const onModelClosed = (title: string) => {
+        handleCloseModel();
+        handleClose();
+        props.onContextMenuSelected(symbolId, title);
+    }
+
+    const onSymbolTitleChange = (e: any) => {
+        setSymbolTitle(e.currentTarget.value);
+    }
+
+    const actions = [
+        { icon: <ChangeHistory />, name: 'customTriangle' },
+        { icon: <Pentagon />, name: 'pentagon' },
+        { icon: <CropPortrait />, name: 'cylinder' },
+        { icon: <RectangleSharp />, name: 'rectangle' },
+        { icon: <Circle />, name: 'circle' },
+        { icon: <Crop169 />, name: 'parallelogram' },
+        { icon: <DiamondSharp />, name: 'diamond' },
+        { icon: <Circle />, name: 'oval' }
+    ];
+
+    const style = {
+        position: 'absolute' as 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: 400,
+        bgcolor: 'background.paper',
+        border: '2px solid #000',
+        boxShadow: 24,
+        pt: 2,
+        px: 4,
+        pb: 3,
+    };
+
     return <>
-        <div className="popup-container" id="popupContainer">
-            <div className="popup-content">
-                <div className="symbol oval" symbol-id={'oval'} title="Start/End"></div>
-                <div className="symbol customTriangle" symbol-id={'customTriangle'} title="customTriangle"></div>
-                <div className="symbol diamond" symbol-id={'diamond'} title="Decision">
-                </div>
-                <div className="symbol parallelogram" symbol-id={'parallelogram'} title="Input/Output"></div>
-                <div className="symbol circle" symbol-id={'circle'} title="Connector"></div>
-                <div className="symbol rectangle" symbol-id={'rectangle'} title="Direct Access Storage - Process - Document - Predefined Process - Delay"></div>
-                <div className="symbol cylinder" symbol-id={'cylinder'} title="Data"></div>
-                <div className="symbol pentagon" symbol-id={'pentagon'} title="Manual Input"></div>               
-            </div>
-        </div>
+        <Modal
+            open={modelOpen}
+            onClose={onModelClosed}
+            aria-labelledby="parent-modal-title"
+            aria-describedby="parent-modal-description"
+        >
+            <Box sx={{ ...style, width: 600, textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="h4">Enter Symbol Title Via Selected Symbol</Typography>
+                <TextField id="filled-basic" label="Please Enter" variant="standard" onBlur={onSymbolTitleChange} style={{ width: 200, marginLeft: 200 }} />
+                <Button type="button" variant="contained" onClick={onModalSaveClick} style={{ marginTop: 10, width: 200, marginLeft: 200 }}>Save</Button>
+            </Box>
+        </Modal>
+        <SpeedDial
+            ariaLabel="SpeedDial controlled open example"
+            sx={{ position: 'absolute', bottom: 16, left: 10 }}
+            icon={<SpeedDialIcon />}
+            onClose={handleClose}
+            onOpen={handleOpen}
+            open={open}
+        >
+            {actions.map((action) => (
+                <SpeedDialAction
+                    key={action.name}
+                    icon={action.icon}
+                    tooltipTitle={action.name}
+                    onClick={onSymbolSelected.bind(this, action.name)}
+                />
+            ))}
+        </SpeedDial>
+
     </>
 
 }

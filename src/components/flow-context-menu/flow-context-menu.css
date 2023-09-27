@@ -10,7 +10,7 @@
     align-items: center;
     text-align: center;
     z-index: 99;
-    zoom:50%
+    zoom:50%; 
 }
 
 .popup-container .symbol {
@@ -19,7 +19,7 @@
 }
 
 .popup-content {
-    background: #fff;
+    background: #353030;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);

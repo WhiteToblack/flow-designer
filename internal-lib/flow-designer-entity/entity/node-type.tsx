@@ -65,3 +65,15 @@ enum FlowNodeType {
     // Usually depicted as a circle with a plus sign.
     SummingJunction,
 }
+
+enum FlowSymbolType {
+    Oval,
+    Rectangle,
+    Diamond,
+    Parallelogram,
+    Circle,
+    Cylinder,
+    Pentagon
+}
+
+export { FlowNodeType, FlowSymbolType };
